@@ -3,3 +3,7 @@ Is a local web based project that records voice and process it through chat gpt 
 # Requierements
 flask
 openai
+
+# SSL Cert
+Use this command to create the certificate for some browsers that requiere it:
+openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
