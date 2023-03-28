@@ -1,0 +1,34 @@
+from flask import Flask, render_template, request ,jsonify
+import config
+import aicontent
+
+
+def page_not_found(e):
+  return render_template('404.html'), 404
+
+app = Flask(__name__)
+app.config.from_object(config.config['development'])
+app.register_error_handler(404, page_not_found)
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/process_voice_input', methods=['POST'])
+def process_voice_input():
+    transcript = request.json['transcript']
+    print('Voice input received:', transcript)
+
+    query = "You are currently in a job interview, answer the following question: {}".format(transcript)
+
+    # Process the transcript using the OpenAI Python package
+    openAIAnswerUnformatted = aicontent.openAIQuery(query)
+    gpt_response = openAIAnswerUnformatted
+    # For now, let's return a dummy response
+    # gpt_response = 'This is a dummy GPT response for: ' + transcript
+
+    return jsonify(response=gpt_response)
+
+if __name__ == '__main__':
+  app.run( ssl_context=('cert.pem', 'key.pem'),host='0.0.0.0', port='8885', debug=True)

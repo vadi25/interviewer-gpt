@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Input Web App</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-5">
+        <h1 class="text-4xl font-bold mb-4">Voice Input Web App</h1>
+        <div class="mb-4">
+            <label for="languageSelection" class="block text-xl mb-2">Select Language:</label>
+            <select id="languageSelection" class="bg-white border border-gray-300 rounded py-2 px-4">
+                <option value="en-US">English</option>
+                <option value="es">Spanish</option>
+            </select>
+        </div>
+        <button id="listenButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">Start Listening</button>
+        <p id="output" class="text-xl">Press the button or the 'L' key to start listening.</p>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/annyang/2.6.1/annyang.min.js"></script>
+    <script>
+        if (annyang) {
+            const listenButton = document.getElementById('listenButton');
+            const output = document.getElementById('output');
+            const languageSelection = document.getElementById('languageSelection');
+
+            function sendTranscriptToServer(transcript) {
+                fetch('/process_voice_input', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ transcript: transcript })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Server response:', data);
+                    output.textContent = 'GPT response: ' + data.response;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    output.textContent = 'Error: ' + error;
+                });
+            }
+
+            function listen() {
+                output.textContent = 'Listening...';
+
+                // Set the language based on the user's selection
+                annyang.setLanguage(languageSelection.value);
+
+                annyang.addCallback('result', (phrases) => {
+                    const transcript = phrases[0];
+                    output.textContent = 'You said: ' + transcript;
+                    sendTranscriptToServer(transcript);
+                    annyang.pause(); // Pause the speech recognition after receiving the first result
+                });
+
+                annyang.addCallback('error', (event) => {
+                    output.textContent = 'Error: ' + event.error;
+                });
+
+                annyang.start();
+            }
+
+            listenButton.addEventListener('click', listen);
+
+            window.addEventListener('keydown', (event) => {
+                if (event.key === 'l' || event.key === 'L') {
+                    listenButton.click();
+                }
+            });
+        } else {
+            output.textContent = 'Speech recognition is not supported in your browser.';
+        }
+    </script>
+</body>
+</html>
