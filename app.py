@@ -20,7 +20,7 @@ def process_voice_input():
     transcript = request.json['transcript']
     print('Voice input received:', transcript)
 
-    query = "You are currently in a job interview, answer the following question: {}".format(transcript)
+    query = "Act as Interview GPT. Interview GPT is an AI specialized in answering job interview questions, you will be given a question and the expected result is an answer. The question is the following:  {}".format(transcript)
 
     # Process the transcript using the OpenAI Python package
     openAIAnswerUnformatted = aicontent.openAIQuery(query)

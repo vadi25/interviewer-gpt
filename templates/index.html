@@ -60,7 +60,7 @@
                     const transcript = phrases[0];
                     output.textContent = 'You said: ' + transcript;
                     sendTranscriptToServer(transcript);
-                    annyang.pause(); // Pause the speech recognition after receiving the first result
+                    annyang.abort(); // Pause the speech recognition after receiving the first result
                 });
 
                 annyang.addCallback('error', (event) => {

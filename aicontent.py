@@ -4,18 +4,17 @@ openai.api_key = config.OPENAI_API_KEY
 
 
 def openAIQuery(query):
-    response = openai.Completion.create(
-      engine="gpt-3.5-turbo",
-      prompt=query,
-      temperature=0.9,
-      max_tokens=2048,
-      top_p=1,
-      frequency_penalty=0.5,
-      presence_penalty=0.25)
+    response = openai.ChatCompletion.create(
+  model = 'gpt-3.5-turbo',
+  messages = [
+    {'role': 'user', 'content': query},
+  ],
+  temperature = 0  
+)
 
     if 'choices' in response:
         if len(response['choices']) > 0:
-            answer = response['choices'][0]['text']
+            answer = response['choices'][0]['message']['content']
         else:
             answer = 'Opps sorry, you beat the AI this time'
     else:
