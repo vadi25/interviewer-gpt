@@ -1,3 +1,6 @@
+with open('key.txt') as key:
+    line=key.readline()
+    
 class Config(object):
     DEBUG = True
     TESTING = False
@@ -13,4 +16,4 @@ config = {
 
 ## Enter your Open API Key here
 
-OPENAI_API_KEY = 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+OPENAI_API_KEY = line
